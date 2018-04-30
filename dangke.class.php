@@ -38,26 +38,20 @@ class dangke
      * @param string $pwd
      * @param int $wanted_score
      */
-    public function __construct($id = '', $pwd = '',$user_score_id, $wanted_score = 100)
+    public function __construct($id = '', $pwd = '', $wanted_score = 100)
     {
         //初始化
         $this->id = $id;
         $this->pwd = $pwd;
-        $this->user_score_id = $user_score_id;
         $this->wanted_score = $wanted_score;
         $this->data_orign = $this->data_orign.$this->user_score_id;
     }
-
-    /*配置信息
-     * @param $config_array = [$id,$pwd,$wanted_score]
-     */
-    public function config($config_array)
-    {
-        $this->id = $config_array[0];
-        $this->pwd = $config_array[1];
-        $this->user_score_id = $config_array[2];
-        if(isset($config_array[3]))
-            $this->wanted_score = $config_array[3];
+  
+    //登录并获取scoreid
+    public function login(){
+      $score_id = $this->_get_score_id();
+      if($score_id==-1) return "账号或者密码错误，登录失败";
+      $this->user_score_id=$score_id;//设置score_id
     }
 
     /**正确答案
@@ -88,7 +82,68 @@ class dangke
         return $score;
     }
 
-
+    public function _get_score_id()
+    {
+        $data = "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTAwOTEyMzg0MA9kFgJmD2QWAgIEDw9kFgIeB29uY2xpY2sFDXJldHVybiBmYWxzZTtkZLkxb5MMuALdescd8eyX8uEVACRe&__EVENTVALIDATION=%2FwEWBQL8%2FYujBgKp8%2FQVAoTOnYUHAtT2pdkGAtj92vELWa02GudzKD66znxhBnY%2F%2FSHnl5M%3D&LoginID=".$this->id."&UserPwd=".$this->pwd."&ButLogin=%B5%C7+%C2%BC";
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "http://202.197.61.23/exam/login.aspx?logintp=1",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => 1,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => array(
+                "Referer" => "http://202.197.61.23/exam/login.aspx?logintp=1",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+                "Content-Type" => "application/x-www-form-urlencoded"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            echo "cURL Error #:" . $err;
+            return FALSE;
+        } else {
+            $response = iconv("gb2312","UTF-8",$response);
+        }
+      preg_match("/set\-cookie:([^\r\n]*)/i", $response, $matches);  
+      $cookie = $matches[1];
+      if(strpos($response,"密码错误")!==false){
+        return -1;//账号或者密码错误
+      }
+      //登陆成功,解析userid
+      if(strpos($response,"location.href='MainFrame.aspx'")!==false){
+        $curl=curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "http://202.197.61.23/exam/PersonInfo/JoinExam.aspx",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_COOKIE=>$cookie,
+            CURLOPT_HTTPHEADER => array(
+                "Referer" => "http://202.197.61.23/exam/MainLeftMenu.aspx",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            echo "cURL Error #:" . $err;
+            return FALSE;
+        } else {
+            $response = iconv("gb2312","UTF-8",$response);
+        }
+        preg_match("/UserID=(.*)&amp;Start=yes/",$response,$matches);
+        if(isset($matches[1])) return $matches[1];
+      }
+      return -1;
+    }
+  
 
     /**
      *得到正确答案
