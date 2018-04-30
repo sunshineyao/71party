@@ -52,6 +52,7 @@ class dangke
       $score_id = $this->_get_score_id();
       if($score_id==-1) return "账号或者密码错误，登录失败";
       $this->user_score_id=$score_id;//设置score_id
+      return true;
     }
 
     /**正确答案
