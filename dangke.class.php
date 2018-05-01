@@ -81,7 +81,7 @@ class dangke
         $data = $this->data_orign;
         foreach ($this->true_answer as $key => $value)
         {
-            echo $key.'--';print_r($value);echo ' ';
+            //echo $key.'--';print_r($value);echo ' ';
             $data.=$this->_set_choice($key,$value);
         }
         $res = $this->_submit_exam($data);
@@ -98,7 +98,7 @@ class dangke
 
       preg_match("/set\-cookie:([^\r\n]*)/i", $response, $matches);  
       $this->cookie = $matches[1];
-      print($this->cookie);
+      //print($this->cookie);
       if(strpos($response,"密码错误")!==false){
         return false;//账号或者密码错误
       }
@@ -107,7 +107,7 @@ class dangke
         $response=$this->http_get("http://202.197.61.23/exam/PersonInfo/JoinExam.aspx",$this->cookie, "http://202.197.61.23/exam/MainLeftMenu.aspx");
 
         preg_match("/PaperID=(.*)&amp;UserID=(.*)&amp;Start=yes/",$response,$matches);
-        print_r($matches);
+        //print_r($matches);
         if(isset($matches[2])){
           $this->paper_id=$matches[1];
           $this->user_id=$matches[2];
