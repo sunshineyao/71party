@@ -58,7 +58,7 @@ class dangke
     //登录并获取scoreid
     public function login(){
       $score_id = $this->_get_score_id();
-      if($score_id==false) return "账号或者密码错误，登录失败";
+      if($score_id==false) return "account or password wrong";
       $this->data_orign = $this->data_orign.'UserScoreID='.$this->user_score_id.'&PaperID='.$this->paper_id;
       return true;
     }
@@ -79,7 +79,7 @@ class dangke
     public function run()
     {
         $data = $this->data_orign;
-        foreach ($this->true_array as $key => $value)
+        foreach ($this->true_answer as $key => $value)
         {
             echo $key.'--';print_r($value);echo ' ';
             $data.=$this->_set_choice($key,$value);
@@ -93,32 +93,9 @@ class dangke
     public function _get_score_id()
     {
         $data = "__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=%2FwEPDwUKMTAwOTEyMzg0MA9kFgJmD2QWAgIEDw9kFgIeB29uY2xpY2sFDXJldHVybiBmYWxzZTtkZLkxb5MMuALdescd8eyX8uEVACRe&__EVENTVALIDATION=%2FwEWBQL8%2FYujBgKp8%2FQVAoTOnYUHAtT2pdkGAtj92vELWa02GudzKD66znxhBnY%2F%2FSHnl5M%3D&LoginID=".$this->id."&UserPwd=".$this->pwd."&ButLogin=%B5%C7+%C2%BC";
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "http://202.197.61.23/exam/login.aspx?logintp=1",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => 1,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => array(
-                "Referer" => "http://202.197.61.23/exam/login.aspx?logintp=1",
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
-                "Content-Type" => "application/x-www-form-urlencoded"
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error #:" . $err;
-            return false;
-        } else {
-            $response = iconv("gb2312","UTF-8",$response);
-        }
+
+        $response = $this->http_post("http://202.197.61.23/exam/login.aspx?logintp=1",$data,'',"http://202.197.61.23/exam/login.aspx?logintp=1");
+
       preg_match("/set\-cookie:([^\r\n]*)/i", $response, $matches);  
       $this->cookie = $matches[1];
       print($this->cookie);
@@ -127,26 +104,8 @@ class dangke
       }
       //登陆成功,解析userid
       if(strpos($response,"location.href='MainFrame.aspx'")!==false){
-        $curl=curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "http://202.197.61.23/exam/PersonInfo/JoinExam.aspx",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_COOKIE=>$this->cookie,
-            CURLOPT_HTTPHEADER => array(
-                "Referer" => "http://202.197.61.23/exam/MainLeftMenu.aspx",
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
-            ),
-        ));
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error #:" . $err;
-            return false;
-        } else {
-            $response = iconv("gb2312","UTF-8",$response);
-        }
+        $response=$this->http_get("http://202.197.61.23/exam/PersonInfo/JoinExam.aspx",$this->cookie, "http://202.197.61.23/exam/MainLeftMenu.aspx");
+
         preg_match("/PaperID=(.*)&amp;UserID=(.*)&amp;Start=yes/",$response,$matches);
         print_r($matches);
         if(isset($matches[2])){
@@ -155,7 +114,7 @@ class dangke
           //解析试卷id
           $url= "http://202.197.61.23/exam/PersonInfo/StartExamAll.aspx?PaperID=".$this->paper_id."&UserID=".$this->user_id."&Start=yes";
           $refer = "http://202.197.61.23/exam/PersonInfo/JoinExam.aspx";
-          $response=$this->http_get($url,$refer);
+          $response=$this->http_get($url,$this->cookie,$refer);
          // print($response);
           //解析user_score_id
           preg_match("/AutoJudge([\s\S]*)value=\"(.*)\" name=UserScoreID/",$response,$matches);
@@ -196,8 +155,7 @@ class dangke
                 $score = $this->_parse_score($res);
                 if($score>0)
                 {
-                    $this->true_array[$i] = $this->arraychoice[$j];
-                    print($this->true_array[$i]);
+                    $this->true_answer[$i] = $this->arraychoice[$j];
                     break;
                 }
             }
@@ -211,34 +169,7 @@ class dangke
      */
     private function _submit_exam($data)
     {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "http://202.197.61.23/exam/PersonInfo/SubmExamAll.aspx",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_COOKIE=>$this->cookie,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => array(
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
-                "Content-Type" => "application/x-www-form-urlencoded",
-                "Accept"      =>  "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
-        if ($err) {
-            echo "cURL Error #:" . $err;
-            return FALSE;
-        } else {
-            return iconv("gb2312","UTF-8",$response);
-        }
-
+        return $this->http_post("http://202.197.61.23/exam/PersonInfo/SubmExamAll.aspx",$data);
     }
 
     /**解析分数
@@ -277,18 +208,27 @@ class dangke
         }
     }
   
-  function http_get($url,$refer){
+  function http_get($url,$cookie='',$refer=''){
     $curl=curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_COOKIE=>$this->cookie,
         CURLOPT_HTTPHEADER => array(
             "Referer" => $refer,
             "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
         ),
     ));
+    if($cookie!=='')curl_setopt($curl, CURLOPT_COOKIE, $cookie);
+    if($refer!=='')curl_setopt($curl, CURLOPT_HTTPHEADER,array(
+            "Referer" => $refer,
+            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+        ));
+    else{
+        curl_setopt($curl, CURLOPT_HTTPHEADER,array(
+            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+        ));
+    }
     $response = curl_exec($curl);
     $err = curl_error($curl);
     curl_close($curl);
@@ -297,6 +237,45 @@ class dangke
         return false;
     } else {
        return iconv("gb2312","UTF-8",$response);
+    }
+  }
+
+  function http_post($url,$data,$cookie='',$refer=''){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HEADER => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $data,
+    ));
+    if($cookie!=='')curl_setopt($curl, CURLOPT_COOKIE, $cookie);
+    if($refer!=='')curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            "Referer"=>$refer,
+            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+            "Content-Type" => "application/x-www-form-urlencoded",
+            "Accept"      =>  "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        ));
+    else{
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+            "Content-Type" => "application/x-www-form-urlencoded",
+            "Accept"      =>  "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        ));
+    }
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+    if ($err) {
+        echo "cURL Error #:" . $err;
+        return false;
+    } else {
+        return iconv("gb2312","UTF-8",$response);
     }
   }
 
