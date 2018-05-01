@@ -3,8 +3,10 @@
  * Created by PhpStorm.
  * User: han
  * Date: 2017/5/17
+ * Update 2018/5/1
  * Time: 12:31
  * 党课类
+ * 距离上次居然已经过了一年了，嘿嘿
  * Class dangke
  */
 class dangke
@@ -12,10 +14,12 @@ class dangke
     private $id; //账号
     private $pwd; //密码
     private $wanted_score; //期望分数
-    private $user_score_id; //试卷分数id,暂时未作模拟登陆时需要用到
+    private $user_id; //用户内部id
+    private $user_score_id; //试卷id
+    private $paper_id='28'; //试卷类型
     private $true_answer = []; //正确结果
     //初始数据字符串
-    private $data_orign = "PaperID=28&PassMark=60&FillAutoGrade=1&SeeResult=1&AutoJudge=1&timeminute=59&timesecond=47&TestTypeTitle1=%B5%A5%D1%A1%CC%E2&RubricID1=9&BaseTestType1=%B5%A5%D1%A1%C0%E0&TestTypeTitle2=%B5%A5%D1%A1%CC%E2&RubricID2=12&BaseTestType2=%B5%A5%D1%A1%C0%E0&TestTypeTitle3=%B5%A5%D1%A1%CC%E2&RubricID3=28&BaseTestType3=%B5%A5%D1%A1%C0%E0&TestTypeTitle4=%B5%A5%D1%A1%CC%E2&RubricID4=29&BaseTestType4=%B5%A5%D1%A1%C0%E0&TestTypeTitle5=%B5%A5%D1%A1%CC%E2&RubricID5=30&BaseTestType5=%B5%A5%D1%A1%C0%E0&TestTypeTitle6=%B5%A5%D1%A1%CC%E2&RubricID6=42&BaseTestType6=%B5%A5%D1%A1%C0%E0&TestTypeTitle7=%B5%A5%D1%A1%CC%E2&RubricID7=44&BaseTestType7=%B5%A5%D1%A1%C0%E0&TestTypeTitle8=%B5%A5%D1%A1%CC%E2&RubricID8=54&BaseTestType8=%B5%A5%D1%A1%C0%E0&TestTypeTitle9=%B5%A5%D1%A1%CC%E2&RubricID9=56&BaseTestType9=%B5%A5%D1%A1%C0%E0&TestTypeTitle10=%B5%A5%D1%A1%CC%E2&RubricID10=62&BaseTestType10=%B5%A5%D1%A1%C0%E0&TestTypeTitle11=%B5%A5%D1%A1%CC%E2&RubricID11=69&BaseTestType11=%B5%A5%D1%A1%C0%E0&TestTypeTitle12=%B5%A5%D1%A1%CC%E2&RubricID12=71&BaseTestType12=%B5%A5%D1%A1%C0%E0&TestTypeTitle13=%B5%A5%D1%A1%CC%E2&RubricID13=73&BaseTestType13=%B5%A5%D1%A1%C0%E0&TestTypeTitle14=%B5%A5%D1%A1%CC%E2&RubricID14=82&BaseTestType14=%B5%A5%D1%A1%C0%E0&TestTypeTitle15=%B5%A5%D1%A1%CC%E2&RubricID15=84&BaseTestType15=%B5%A5%D1%A1%C0%E0&TestTypeTitle16=%B5%A5%D1%A1%CC%E2&RubricID16=87&BaseTestType16=%B5%A5%D1%A1%C0%E0&TestTypeTitle17=%B5%A5%D1%A1%CC%E2&RubricID17=98&BaseTestType17=%B5%A5%D1%A1%C0%E0&TestTypeTitle18=%B5%A5%D1%A1%CC%E2&RubricID18=105&BaseTestType18=%B5%A5%D1%A1%C0%E0&TestTypeTitle19=%B5%A5%D1%A1%CC%E2&RubricID19=108&BaseTestType19=%B5%A5%D1%A1%C0%E0&TestTypeTitle20=%B5%A5%D1%A1%CC%E2&RubricID20=130&BaseTestType20=%B5%A5%D1%A1%C0%E0&TestTypeTitle21=%B6%E0%D1%A1%CC%E2&RubricID21=151&BaseTestType21=%B6%E0%D1%A1%C0%E0&TestTypeTitle22=%B6%E0%D1%A1%CC%E2&RubricID22=154&BaseTestType22=%B6%E0%D1%A1%C0%E0&TestTypeTitle23=%B6%E0%D1%A1%CC%E2&RubricID23=168&BaseTestType23=%B6%E0%D1%A1%C0%E0&TestTypeTitle24=%B6%E0%D1%A1%CC%E2&RubricID24=169&BaseTestType24=%B6%E0%D1%A1%C0%E0&TestTypeTitle25=%B6%E0%D1%A1%CC%E2&RubricID25=204&BaseTestType25=%B6%E0%D1%A1%C0%E0&TestTypeTitle26=%B6%E0%D1%A1%CC%E2&RubricID26=207&BaseTestType26=%B6%E0%D1%A1%C0%E0&TestTypeTitle27=%B6%E0%D1%A1%CC%E2&RubricID27=211&BaseTestType27=%B6%E0%D1%A1%C0%E0&TestTypeTitle28=%B6%E0%D1%A1%CC%E2&RubricID28=219&BaseTestType28=%B6%E0%D1%A1%C0%E0&TestTypeTitle29=%B6%E0%D1%A1%CC%E2&RubricID29=223&BaseTestType29=%B6%E0%D1%A1%C0%E0&TestTypeTitle30=%B6%E0%D1%A1%CC%E2&RubricID30=228&BaseTestType30=%B6%E0%D1%A1%C0%E0&TestTypeTitle31=%B6%E0%D1%A1%CC%E2&RubricID31=254&BaseTestType31=%B6%E0%D1%A1%C0%E0&TestTypeTitle32=%B6%E0%D1%A1%CC%E2&RubricID32=256&BaseTestType32=%B6%E0%D1%A1%C0%E0&TestTypeTitle33=%B6%E0%D1%A1%CC%E2&RubricID33=261&BaseTestType33=%B6%E0%D1%A1%C0%E0&TestTypeTitle34=%B6%E0%D1%A1%CC%E2&RubricID34=271&BaseTestType34=%B6%E0%D1%A1%C0%E0&TestTypeTitle35=%B6%E0%D1%A1%CC%E2&RubricID35=276&BaseTestType35=%B6%E0%D1%A1%C0%E0&TestTypeTitle36=%B6%E0%D1%A1%CC%E2&RubricID36=282&BaseTestType36=%B6%E0%D1%A1%C0%E0&TestTypeTitle37=%B6%E0%D1%A1%CC%E2&RubricID37=287&BaseTestType37=%B6%E0%D1%A1%C0%E0&TestTypeTitle38=%B6%E0%D1%A1%CC%E2&RubricID38=294&BaseTestType38=%B6%E0%D1%A1%C0%E0&TestTypeTitle39=%B6%E0%D1%A1%CC%E2&RubricID39=305&BaseTestType39=%B6%E0%D1%A1%C0%E0&TestTypeTitle40=%B6%E0%D1%A1%CC%E2&RubricID40=306&BaseTestType40=%B6%E0%D1%A1%C0%E0&irow=40&UserScoreID=";
+    private $data_orign = "PassMark=60&FillAutoGrade=1&SeeResult=1&AutoJudge=1&timeminute=59&timesecond=47&TestTypeTitle1=%B5%A5%D1%A1%CC%E2&RubricID1=9&BaseTestType1=%B5%A5%D1%A1%C0%E0&TestTypeTitle2=%B5%A5%D1%A1%CC%E2&RubricID2=12&BaseTestType2=%B5%A5%D1%A1%C0%E0&TestTypeTitle3=%B5%A5%D1%A1%CC%E2&RubricID3=28&BaseTestType3=%B5%A5%D1%A1%C0%E0&TestTypeTitle4=%B5%A5%D1%A1%CC%E2&RubricID4=29&BaseTestType4=%B5%A5%D1%A1%C0%E0&TestTypeTitle5=%B5%A5%D1%A1%CC%E2&RubricID5=30&BaseTestType5=%B5%A5%D1%A1%C0%E0&TestTypeTitle6=%B5%A5%D1%A1%CC%E2&RubricID6=42&BaseTestType6=%B5%A5%D1%A1%C0%E0&TestTypeTitle7=%B5%A5%D1%A1%CC%E2&RubricID7=44&BaseTestType7=%B5%A5%D1%A1%C0%E0&TestTypeTitle8=%B5%A5%D1%A1%CC%E2&RubricID8=54&BaseTestType8=%B5%A5%D1%A1%C0%E0&TestTypeTitle9=%B5%A5%D1%A1%CC%E2&RubricID9=56&BaseTestType9=%B5%A5%D1%A1%C0%E0&TestTypeTitle10=%B5%A5%D1%A1%CC%E2&RubricID10=62&BaseTestType10=%B5%A5%D1%A1%C0%E0&TestTypeTitle11=%B5%A5%D1%A1%CC%E2&RubricID11=69&BaseTestType11=%B5%A5%D1%A1%C0%E0&TestTypeTitle12=%B5%A5%D1%A1%CC%E2&RubricID12=71&BaseTestType12=%B5%A5%D1%A1%C0%E0&TestTypeTitle13=%B5%A5%D1%A1%CC%E2&RubricID13=73&BaseTestType13=%B5%A5%D1%A1%C0%E0&TestTypeTitle14=%B5%A5%D1%A1%CC%E2&RubricID14=82&BaseTestType14=%B5%A5%D1%A1%C0%E0&TestTypeTitle15=%B5%A5%D1%A1%CC%E2&RubricID15=84&BaseTestType15=%B5%A5%D1%A1%C0%E0&TestTypeTitle16=%B5%A5%D1%A1%CC%E2&RubricID16=87&BaseTestType16=%B5%A5%D1%A1%C0%E0&TestTypeTitle17=%B5%A5%D1%A1%CC%E2&RubricID17=98&BaseTestType17=%B5%A5%D1%A1%C0%E0&TestTypeTitle18=%B5%A5%D1%A1%CC%E2&RubricID18=105&BaseTestType18=%B5%A5%D1%A1%C0%E0&TestTypeTitle19=%B5%A5%D1%A1%CC%E2&RubricID19=108&BaseTestType19=%B5%A5%D1%A1%C0%E0&TestTypeTitle20=%B5%A5%D1%A1%CC%E2&RubricID20=130&BaseTestType20=%B5%A5%D1%A1%C0%E0&TestTypeTitle21=%B6%E0%D1%A1%CC%E2&RubricID21=151&BaseTestType21=%B6%E0%D1%A1%C0%E0&TestTypeTitle22=%B6%E0%D1%A1%CC%E2&RubricID22=154&BaseTestType22=%B6%E0%D1%A1%C0%E0&TestTypeTitle23=%B6%E0%D1%A1%CC%E2&RubricID23=168&BaseTestType23=%B6%E0%D1%A1%C0%E0&TestTypeTitle24=%B6%E0%D1%A1%CC%E2&RubricID24=169&BaseTestType24=%B6%E0%D1%A1%C0%E0&TestTypeTitle25=%B6%E0%D1%A1%CC%E2&RubricID25=204&BaseTestType25=%B6%E0%D1%A1%C0%E0&TestTypeTitle26=%B6%E0%D1%A1%CC%E2&RubricID26=207&BaseTestType26=%B6%E0%D1%A1%C0%E0&TestTypeTitle27=%B6%E0%D1%A1%CC%E2&RubricID27=211&BaseTestType27=%B6%E0%D1%A1%C0%E0&TestTypeTitle28=%B6%E0%D1%A1%CC%E2&RubricID28=219&BaseTestType28=%B6%E0%D1%A1%C0%E0&TestTypeTitle29=%B6%E0%D1%A1%CC%E2&RubricID29=223&BaseTestType29=%B6%E0%D1%A1%C0%E0&TestTypeTitle30=%B6%E0%D1%A1%CC%E2&RubricID30=228&BaseTestType30=%B6%E0%D1%A1%C0%E0&TestTypeTitle31=%B6%E0%D1%A1%CC%E2&RubricID31=254&BaseTestType31=%B6%E0%D1%A1%C0%E0&TestTypeTitle32=%B6%E0%D1%A1%CC%E2&RubricID32=256&BaseTestType32=%B6%E0%D1%A1%C0%E0&TestTypeTitle33=%B6%E0%D1%A1%CC%E2&RubricID33=261&BaseTestType33=%B6%E0%D1%A1%C0%E0&TestTypeTitle34=%B6%E0%D1%A1%CC%E2&RubricID34=271&BaseTestType34=%B6%E0%D1%A1%C0%E0&TestTypeTitle35=%B6%E0%D1%A1%CC%E2&RubricID35=276&BaseTestType35=%B6%E0%D1%A1%C0%E0&TestTypeTitle36=%B6%E0%D1%A1%CC%E2&RubricID36=282&BaseTestType36=%B6%E0%D1%A1%C0%E0&TestTypeTitle37=%B6%E0%D1%A1%CC%E2&RubricID37=287&BaseTestType37=%B6%E0%D1%A1%C0%E0&TestTypeTitle38=%B6%E0%D1%A1%CC%E2&RubricID38=294&BaseTestType38=%B6%E0%D1%A1%C0%E0&TestTypeTitle39=%B6%E0%D1%A1%CC%E2&RubricID39=305&BaseTestType39=%B6%E0%D1%A1%C0%E0&TestTypeTitle40=%B6%E0%D1%A1%CC%E2&RubricID40=306&BaseTestType40=%B6%E0%D1%A1%C0%E0&irow=40&";
     //选项集合
    private $arraychoice = [
                 "A","B","C","D",
@@ -31,6 +35,8 @@ class dangke
                 ["B","C","D"],
                 ["C","D"]
             ];
+  //cookie
+  private $cookie = '';
 
     /**
      * dangke constructor.
@@ -38,20 +44,22 @@ class dangke
      * @param string $pwd
      * @param int $wanted_score
      */
-    public function __construct($id = '', $pwd = '', $wanted_score = 100)
+    public function __construct($id = '', $pwd = '',$score_id='', $wanted_score = 100)
     {
         //初始化
         $this->id = $id;
         $this->pwd = $pwd;
+        $this->user_score_id=$score_id;
         $this->wanted_score = $wanted_score;
-        $this->data_orign = $this->data_orign.$this->user_score_id;
+        if($this->user_score_id!='')
+          $this->data_orign = $this->data_orign.'UserScoreID='.$this->user_score_id.'&PaperID='.$this->paper_id;
     }
   
     //登录并获取scoreid
     public function login(){
       $score_id = $this->_get_score_id();
-      if($score_id==-1) return "账号或者密码错误，登录失败";
-      $this->user_score_id=$score_id;//设置score_id
+      if($score_id==false) return "账号或者密码错误，登录失败";
+      $this->data_orign = $this->data_orign.'UserScoreID='.$this->user_score_id.'&PaperID='.$this->paper_id;
       return true;
     }
 
@@ -70,7 +78,6 @@ class dangke
      */
     public function run()
     {
-
         $data = $this->data_orign;
         foreach ($this->true_array as $key => $value)
         {
@@ -108,14 +115,15 @@ class dangke
         curl_close($curl);
         if ($err) {
             echo "cURL Error #:" . $err;
-            return FALSE;
+            return false;
         } else {
             $response = iconv("gb2312","UTF-8",$response);
         }
       preg_match("/set\-cookie:([^\r\n]*)/i", $response, $matches);  
-      $cookie = $matches[1];
+      $this->cookie = $matches[1];
+      print($this->cookie);
       if(strpos($response,"密码错误")!==false){
-        return -1;//账号或者密码错误
+        return false;//账号或者密码错误
       }
       //登陆成功,解析userid
       if(strpos($response,"location.href='MainFrame.aspx'")!==false){
@@ -124,7 +132,7 @@ class dangke
             CURLOPT_URL => "http://202.197.61.23/exam/PersonInfo/JoinExam.aspx",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_COOKIE=>$cookie,
+            CURLOPT_COOKIE=>$this->cookie,
             CURLOPT_HTTPHEADER => array(
                 "Referer" => "http://202.197.61.23/exam/MainLeftMenu.aspx",
                 "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
@@ -135,14 +143,29 @@ class dangke
         curl_close($curl);
         if ($err) {
             echo "cURL Error #:" . $err;
-            return FALSE;
+            return false;
         } else {
             $response = iconv("gb2312","UTF-8",$response);
         }
-        preg_match("/UserID=(.*)&amp;Start=yes/",$response,$matches);
-        if(isset($matches[1])) return $matches[1];
+        preg_match("/PaperID=(.*)&amp;UserID=(.*)&amp;Start=yes/",$response,$matches);
+        print_r($matches);
+        if(isset($matches[2])){
+          $this->paper_id=$matches[1];
+          $this->user_id=$matches[2];
+          //解析试卷id
+          $url= "http://202.197.61.23/exam/PersonInfo/StartExamAll.aspx?PaperID=".$this->paper_id."&UserID=".$this->user_id."&Start=yes";
+          $refer = "http://202.197.61.23/exam/PersonInfo/JoinExam.aspx";
+          $response=$this->http_get($url,$refer);
+         // print($response);
+          //解析user_score_id
+          preg_match("/AutoJudge([\s\S]*)value=\"(.*)\" name=UserScoreID/",$response,$matches);
+          if(isset($matches[2])){
+            $this->user_score_id=$matches[2];
+            return true;
+          }
+        }
       }
-      return -1;
+      return false;
     }
   
 
@@ -174,6 +197,7 @@ class dangke
                 if($score>0)
                 {
                     $this->true_array[$i] = $this->arraychoice[$j];
+                    print($this->true_array[$i]);
                     break;
                 }
             }
@@ -195,6 +219,7 @@ class dangke
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_COOKIE=>$this->cookie,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $data,
             CURLOPT_HTTPHEADER => array(
@@ -251,6 +276,29 @@ class dangke
             return $res;
         }
     }
+  
+  function http_get($url,$refer){
+    $curl=curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_COOKIE=>$this->cookie,
+        CURLOPT_HTTPHEADER => array(
+            "Referer" => $refer,
+            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36",
+        ),
+    ));
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
+    if ($err) {
+        echo "cURL Error #:" . $err;
+        return false;
+    } else {
+       return iconv("gb2312","UTF-8",$response);
+    }
+  }
 
 
 }

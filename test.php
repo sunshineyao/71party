@@ -6,9 +6,9 @@
  * Time: 16:41
  */
 include 'dangke.class.php';
-$dang = new dangke('20520023','666359');
-$dang->login();
-print_r($dang);
+$dang = new dangke('20518028','717955','',100);
+echo $dang->login();
+//print_r($dang);
 //$dang->get_answers();
 //echo $dang->run();
 
