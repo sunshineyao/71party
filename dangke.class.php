@@ -33,7 +33,8 @@ class dangke
                 ["B","C"],
                 ["B","D"],
                 ["B","C","D"],
-                ["C","D"]
+                ["C","D"],
+                ["A","B","C","D","E"],
             ];
   //cookie
   private $cookie = '';
@@ -78,6 +79,27 @@ class dangke
      */
     public function run()
     {
+        //判断所需分数
+        switch ($this->wanted_score) {
+            case '98':
+                $this->true_answer[20]=[];
+                break;
+            case '97':
+                $this->true_answer[40]=[];
+                break;
+            case '96':
+                $this->true_answer[18]=[];
+                $this->true_answer[19]=[];
+                $this->true_answer[20]=[];
+                break;
+            case '95':
+                $this->true_answer[20]=[];
+                $this->true_answer[40]=[];
+                break;
+            default:
+                # code...
+                break;
+        }
         $data = $this->data_orign;
         foreach ($this->true_answer as $key => $value)
         {
