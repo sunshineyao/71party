@@ -1,4 +1,4 @@
-<?php if(!empty($_POST)&&isset($_POST['userid'])&&isset($_POST['password']))&&isset($_POST['wantedscore'])):?>
+<?php if(!empty($_POST)&&isset($_POST['userid'])&&isset($_POST['password'])&&isset($_POST['wantedscore'])):?>
 <?php
 include 'dangke.class.php';
 $dang = new dangke($_POST['userid'],$_POST['password'],'',$_POST['wantedscore']);
