@@ -4,6 +4,7 @@ include 'dangke.class.php';
 $dang = new dangke($_POST['userid'],$_POST['password'],'',$_POST['wantedscore']);
 $islogin=$dang->login();
 if($islogin){//登陆成功
+	$dang->get_paper();
 	$dang->get_answers();
 	$score = $dang->run();
 	echo "最终分数为".$score;
