@@ -3,7 +3,7 @@
 * Author csuhan
 * https://lovesmg.cn
 */
-include 'dangkeauto.class.php';
+include 'dangke.class.php';
 if(!isset($_SERVER['argv'][1])){
 	print('please enter like this: php test2.php [you score_id] [wanted_score]');
 	exit();
